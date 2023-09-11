@@ -1,0 +1,76 @@
+- name: Evaluate User Workload Monitoring
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    kind: ConfigMap
+    api_version: v1
+    definition:
+      metadata:
+        name: cluster-monitoring-config
+        namespace: openshift-monitoring
+      data:
+        config.yaml: |
+          enableUserWorkload: true
+
+- name: Evaluate Grafana Operator
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: grafana-operator
+        namespace: '{{ cluster_project }}'
+      spec:
+        channel: v5
+        installPlanApproval: Automatic
+        name: grafana-operator
+        source: community-operators
+        sourceNamespace: openshift-marketplace
+
+- name: Wait Grafana Operator
+  kubernetes.core.k8s_info:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: v1
+    kind: Pod
+    namespace: '{{ cluster_project }}'
+    label_selectors:
+      - control-plane = controller-manager
+    field_selectors:
+      - status.phase=Running
+  register: r_grafana_pod
+  retries: 20
+  delay: 10
+  until: r_grafana_pod.resources | list | length == 1
+
+- name: Evaluate Grafana Instance
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    resource_definition: "{{ lookup('template', 'grafana_instance.yml.j2') }}"
+
+- name: Wait Grafana Instance
+  kubernetes.core.k8s_info:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: v1
+    kind: Pod
+    namespace: '{{ cluster_project }}'
+    label_selectors:
+      - app = grafana
+    field_selectors:
+      - status.phase=Running
+  register: r_grafana_pod
+  retries: 20
+  delay: 10
+  until: r_grafana_pod.resources | list | length == 1

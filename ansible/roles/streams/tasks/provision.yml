@@ -1,0 +1,102 @@
+- name: Evaluate Namespace {{ cluster_project }}
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    kind: Project
+    api_version: project.openshift.io/v1
+    definition:
+      metadata:
+        name: "{{ cluster_project }}"
+        annotations:
+          openshift.io/description: "Project for AMQ Streams Cluster"
+          openshift.io/display-name: "AMQ Streams Monitoring Demo - Cluster"
+
+- name: Evaluate Operator Group
+  when: not delete_demo
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    definition:
+      metadata:
+        name: '{{ cluster_project }}-operatorgroup'
+        namespace: '{{ cluster_project }}'
+      spec:
+        targetNamespaces:
+          - '{{ cluster_project }}'
+
+- name: Evaluate AMQ Streams Operator
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: amq-streams
+        namespace: '{{ cluster_project }}'
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: amq-streams
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+
+- name: Wait for AMQ Streams operator to be running
+  kubernetes.core.k8s_info:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: v1
+    kind: Pod
+    namespace: '{{ cluster_project }}'
+    label_selectors:
+      - rht.comp=AMQ_Streams
+      - rht.subcomp=cluster-operator
+    field_selectors:
+      - status.phase=Running
+  register: r_streams_pod
+  retries: 10
+  delay: 10
+  until: r_streams_pod.resources | list | length == 1
+
+- name: Evaluate Cluster ConfigMap
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ cluster_project }}'
+    resource_definition: "{{ lookup('file', 'metrics-cm.yml') }}"
+
+- name: Evaluate Cluster Instance
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ cluster_project }}'
+    resource_definition: "{{ lookup('file', 'cluster.yml') }}"
+
+- name: Wait for AMQ Streams cluster to be running
+  kubernetes.core.k8s_info:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: v1
+    kind: Pod
+    namespace: '{{ cluster_project }}'
+    name: my-cluster-kafka-2
+    field_selectors:
+      - status.phase=Running
+  register: r_streams_pod
+  retries: 10
+  delay: 10
+  until: r_streams_pod.resources | list | length == 1
