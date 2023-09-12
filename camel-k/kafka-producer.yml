@@ -1,0 +1,29 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: KameletBinding
+metadata:
+  annotations:
+    kaoto.io/description: ""
+  name: kafka-producer 
+spec:
+  source:
+    properties:
+      period: 2000
+      message: Test
+    ref:
+      apiVersion: camel.apache.org/v1alpha1
+      kind: Kamelet
+      name: timer-source
+    types: {}
+  sink:
+    properties:
+      password: R5HuW3bonpL9QiPiWFND1tTOvA83aBJa
+      securityProtocol: SASL_PLAINTEXT
+      bootstrapServers: my-cluster-kafka-bootstrap:9092
+      topic: a_quote_requests
+      saslMechanism: SCRAM-SHA-512
+      user: producer
+    ref:
+      apiVersion: camel.apache.org/v1alpha1
+      kind: Kamelet
+      name: kafka-scram-sink
+    types: {}

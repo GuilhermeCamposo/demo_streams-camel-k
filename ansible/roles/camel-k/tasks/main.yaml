@@ -50,3 +50,19 @@
   retries: 120
   delay: 10
   until: r_camelk_operator_pod.resources | list | length == 1
+
+- name: Evaluate kafka-scram Kamelets
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: '{{ verify_tls }}'
+    namespace: '{{ cluster_project }}'
+    state: present
+    resource_definition: "{{ lookup('file', item) }}"
+  register: _kafka
+  retries: 1
+  delay: 10
+  until: not _kafka.failed
+  loop:
+    - kafka-scram-sink.yml
+    - kafka-scram-source.yml
