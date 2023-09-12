@@ -27,11 +27,11 @@
         name: red-hat-camel-k
         namespace: '{{ cluster_project }}'
       spec:
-        channel: 1.10.x
-        installPlanApproval: Automatic
-        name: red-hat-camel-k
-        source: redhat-operators
+        channel: '{{ camel_k_channel }}'
+        name: '{{ camel_k_name }}'
+        source: '{{ camel_k_source }}'
         sourceNamespace: openshift-marketplace
+        installPlanApproval: Automatic
 
 - name: Wait Camel K Operator To Be Running
   kubernetes.core.k8s_info:

@@ -1,4 +1,4 @@
-- name: Evaluate Users
+- name: Evaluate Instance Config
   kubernetes.core.k8s:
     api_key: '{{ token }}'
     host: '{{ server }}'
@@ -7,18 +7,8 @@
     namespace: '{{ cluster_project }}'
     resource_definition: "{{ lookup('file', item) }}"
   loop:
-    - processor-user.yml
-    - producer-user.yml
-    - kafka-ui_user.yml
-
-- name: Evaluate a_quotes Topic
-  kubernetes.core.k8s:
-    api_key: '{{ token }}'
-    host: '{{ server }}'
-    validate_certs: false
-    state: present
-    namespace: '{{ cluster_project }}'
-    resource_definition: "{{ lookup('file', item) }}"
-  loop:
-    - quote-topic.yml
-    - quote-request-topic.yml
+    - topic_request.yml
+    - secret_users_password.yml
+    - user_consumer.yml
+    - user_producer.yml
+    - user_kafka-ui.yml

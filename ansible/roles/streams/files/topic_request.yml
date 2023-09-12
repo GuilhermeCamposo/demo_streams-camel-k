@@ -3,10 +3,9 @@ kind: KafkaTopic
 metadata:
   labels:
     strimzi.io/cluster: my-cluster
-  name: a-quotes
-  namespace: kafka-cluster
+  name: a-requests
 spec:
   config: {}
   partitions: 1
   replicas: 3
-  topicName: a_quotes
+  topicName: a_requests

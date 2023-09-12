@@ -7,6 +7,9 @@
     insecure_skip_tls_verify: true
     verify_tls: false
     delete_demo: false
+    camel_k_name: camel-k
+    camel_k_channel: stable-2.0
+    camel_k_source: community-operators
   tasks:
     - name: Check Required Parameters
       ansible.builtin.fail:

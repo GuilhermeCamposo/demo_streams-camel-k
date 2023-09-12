@@ -1,0 +1,33 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: KameletBinding
+metadata:
+  annotations:
+    kaoto.io/description: ""
+  name: kafka-source
+spec:
+  source:
+    properties:
+      password: kafkauser1
+      securityProtocol: SASL_PLAINTEXT
+      bootstrapServers: my-cluster-kafka-bootstrap:9092
+      topic: a_request
+      saslMechanism: SCRAM-SHA-512
+      user: consumer
+      autoCommitEnable: "true"
+      autoOffsetReset: earliest
+    ref:
+      apiVersion: camel.apache.org/v1alpha1
+      kind: Kamelet
+      name: kafka-scram-source
+    types: {}
+  sink:
+    properties:
+      level: info
+      multiline: "true"
+      showAllProperties: "true"
+      loggerName: DemoKafka
+    ref:
+      apiVersion: camel.apache.org/v1alpha1
+      kind: Kamelet
+      name: log-sink
+    types: {}

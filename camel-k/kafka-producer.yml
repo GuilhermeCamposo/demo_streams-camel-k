@@ -16,10 +16,10 @@ spec:
     types: {}
   sink:
     properties:
-      password: R5HuW3bonpL9QiPiWFND1tTOvA83aBJa
+      password: kafkauser1
       securityProtocol: SASL_PLAINTEXT
       bootstrapServers: my-cluster-kafka-bootstrap:9092
-      topic: a_quote_requests
+      topic: a_requests
       saslMechanism: SCRAM-SHA-512
       user: producer
     ref:
