@@ -10,6 +10,9 @@
     camel_k_name: camel-k
     camel_k_channel: stable-2.0
     camel_k_source: community-operators
+    # camel_k_name: red-hat-camel-k
+    # camel_k_channel: 1.10.x
+    # camel_k_source: redhat-operators
   tasks:
     - name: Check Required Parameters
       ansible.builtin.fail:

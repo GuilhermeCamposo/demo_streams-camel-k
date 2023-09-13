@@ -51,6 +51,18 @@
   delay: 10
   until: r_camelk_operator_pod.resources | list | length == 1
 
+- name: Evaluate Maven and IntegrationPlatform
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: '{{ verify_tls }}'
+    state: present
+    namespace: '{{ cluster_project }}'
+    resource_definition: "{{ lookup('file', item) }}"
+  loop:
+    - maven-settings.yml
+    - integration-platform.yml
+
 - name: Evaluate kafka-scram Kamelets
   kubernetes.core.k8s:
     api_key: '{{ token }}'
