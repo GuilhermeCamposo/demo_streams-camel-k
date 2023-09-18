@@ -11,10 +11,8 @@ spec:
       securityProtocol: SASL_PLAINTEXT
       bootstrapServers: my-cluster-kafka-bootstrap:9092
       topic: a_requests
-      consumerGroup: a_group
-      saslMechanism: SCRAM-SHA-512
       user: consumer
-      autoCommitEnable: "true"
+      consumerGroup: a_group
       autoOffsetReset: earliest
     ref:
       apiVersion: camel.apache.org/v1alpha1
