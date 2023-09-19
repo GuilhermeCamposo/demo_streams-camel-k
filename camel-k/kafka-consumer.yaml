@@ -3,7 +3,7 @@ kind: KameletBinding
 metadata:
   annotations:
     kaoto.io/description: ""
-  name: kafka-source
+  name: kafka-consumer
 spec:
   source:
     properties:
