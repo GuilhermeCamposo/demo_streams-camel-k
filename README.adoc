@@ -47,8 +47,8 @@ ansible-playbook -e token=${token} -e server=${server} playbook.yml
 cd camel-k
 
 # Create producer and consumer
-oc create -f kafka-producer.yml -n kafka-cluster
-oc create -f kafka-consumer.yml -n kafka-cluster
+oc create -f kafka-producer.yml -n demo-camelk-kafka
+oc create -f kafka-consumer.yml -n demo-camelk-kafka
 
 ----
 
