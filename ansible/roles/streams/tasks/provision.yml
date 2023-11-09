@@ -96,7 +96,7 @@
     field_selectors:
       - status.phase=Running
     label_selectors:
-      - strimzi.io/component-type=kafka-exporter  
+      - strimzi.io/component-type=kafka-exporter
   register: r_streams_pod
   retries: 10
   delay: 10
